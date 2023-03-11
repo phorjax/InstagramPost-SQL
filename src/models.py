@@ -9,7 +9,7 @@ from eralchemy2 import render_er
 Base = declarative_base()
 
 class Person(Base):
-    __tablename__ = 'User'
+    __tablename__ = 'user'
     # Here we define columns for the table person
     # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
@@ -19,6 +19,8 @@ class Person(Base):
     nickname = Column(String(250), nullable=False)
     email = Column(String(250), nullable=False, primary_key=True)
     password = Column(String(250), nullable=False, primary_key=True)
+    following = Column(Integer, nullable=True)
+    followers = Column(Integer, nullable=True)
 
 
 class Post(Base):
@@ -26,11 +28,39 @@ class Post(Base):
     # Here we define columns for the table address.
     # Notice that each column is also a normal Python instance attribute.
     id = Column(Integer, primary_key=True)
-    
+    profile_name = Column(String(250), ForeignKey('user.id'))
     title = Column(String(250), nullable=False)
     content = Column(String(250), nullable=False)
+    likes = Column(Integer, nullable=True)
+    comments = Column(Integer, nullable=True)
     
+class Comments(Base):
+    __tablename__ = 'comments'
+    id = Column(Integer, primary_key=True)
+    text = Column(String(250), nullable=False)
+    post_id = Column(Integer, ForeignKey('post.id'))
+    user_id = Column(Integer, ForeignKey('user.id'))
+
+class Likes(Base):
+    __tablename__ = 'likes'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    post_id = Column(Integer, ForeignKey('post.id'))
+    comments_id = Column(Integer, ForeignKey('comments.id'))    
+   
+class Follow(Base):
+    __tablename__ = 'followers'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user_to_id = Column(Integer, ForeignKey('user.id'))
+
     
+class following(Base):
+    __tablename__ = 'following'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user_to_id = Column(Integer, ForeignKey('user.id'))
+        
     
 
     def to_dict(self):
